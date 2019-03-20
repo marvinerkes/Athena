@@ -70,6 +70,7 @@ public class AthenaConnection {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        config.addDataSourceProperty("useSSL", false);
         config.setMaximumPoolSize(settings.poolSize());
         config.setConnectionTimeout(settings.getQueryTimeout());
 
