@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <groupId>de.progme</groupId>
+    <artifactId>athena</artifactId>
+    <packaging>pom</packaging>
+    <version>1.1.1-SNAPSHOT</version>
+    <modules>
+        <module>core</module>
+        <module>example</module>
+    </modules>
+
+    <name>Athena</name>
+    <description>Athena is a MySQL and SQLite util library with integrated HikariCP connection pool and more.</description>
+    <inceptionYear>2015</inceptionYear>
+
+    <developers>
+        <developer>
+            <id>marvinerkes</id>
+            <email>marvin@erkes.me</email>
+        </developer>
+    </developers>
+</project>
