@@ -20,6 +20,8 @@
 package de.progme.athena.db;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Marvin Erkes on 23.08.2015.
@@ -100,5 +102,15 @@ public class DBRow {
     public boolean hasKey(String key) {
 
         return values.containsKey(key);
+    }
+
+    /**
+     * Gets the entriesy.
+     *
+     * @return the entries.
+     */
+    public Set<Map.Entry<String, Object>> entries() {
+
+        return values.entrySet();
     }
 }
