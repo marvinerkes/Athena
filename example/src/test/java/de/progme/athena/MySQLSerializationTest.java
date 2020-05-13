@@ -122,7 +122,7 @@ public class MySQLSerializationTest {
     public static void select(SerializationManager serializationManager) {
 
         System.out.println("Selecting:");
-        List<TestTable> results = serializationManager.select(TestTable.class, -1, new Order("id", Order.Type.ASC));
+        List<TestTable> results = serializationManager.select(TestTable.class, -1, new Order("id", Order.Type.ASC), null);
         results.forEach(System.out::println);
     }
 }

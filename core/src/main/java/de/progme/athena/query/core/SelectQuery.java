@@ -244,6 +244,8 @@ public class SelectQuery implements Query {
          */
         public Builder where(Condition condition) {
 
+            if (condition == null) return this;
+
             this.wheres.add(condition);
             this.operators.add(condition.operator().sql());
 
