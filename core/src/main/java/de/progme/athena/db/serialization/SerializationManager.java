@@ -31,10 +31,12 @@ import de.progme.athena.query.core.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * Created by Marvin Erkes on 11.10.2015.
@@ -42,6 +44,10 @@ import java.util.Map;
  * Represents a class that can be used to serialize classes to eg. tables etc.
  */
 public class SerializationManager {
+
+    private static final DateTimeFormatter MYSQL_DATETIME_FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy/MM/dd HH:mm:ss")
+            .withZone(ZoneOffset.UTC);;
 
     /**
      * The Athena instance.
@@ -132,7 +138,7 @@ public class SerializationManager {
      * @param conditions the conditions for the SQL SELECT.
      * @return a automatically filled list of the template class type with field set.
      */
-    public <T> List<T> select(Class<T> clazz, int limit, Order order, Condition... conditions) {
+    public <T> List<T> select(Class<T> clazz, int limit, Order order, String groupBy, Condition... conditions) {
 
         if (!clazz.isAnnotationPresent(Table.class)) {
             throw new SQLSerializationException("Table annotation is not present!");
@@ -158,6 +164,10 @@ public class SerializationManager {
 
         for (Condition condition : conditions) {
             builder.where(condition);
+        }
+
+        if(groupBy != null) {
+            builder.groupBy(groupBy);
         }
 
         if(order != null) {
@@ -212,7 +222,7 @@ public class SerializationManager {
      */
     public <T> List<T> select(Class<T> clazz, Order order, Condition... conditions) {
 
-        return select(clazz, -1, order, conditions);
+        return select(clazz, -1, order, null, conditions);
     }
 
     /**
@@ -226,7 +236,7 @@ public class SerializationManager {
      */
     public <T> List<T> select(Class<T> clazz, int limit, Condition... conditions) {
 
-        return select(clazz, limit, null, conditions);
+        return select(clazz, limit, null, null, conditions);
     }
 
     /**
@@ -239,7 +249,7 @@ public class SerializationManager {
      */
     public <T> List<T> select(Class<T> clazz, Condition... conditions) {
 
-        return select(clazz, -1, null, conditions);
+        return select(clazz, -1, null, null, conditions);
     }
 
     /**
@@ -292,7 +302,12 @@ public class SerializationManager {
 
                     builder.column(name);
                     field.setAccessible(true);
-                    builder.value(field.get(object).toString());
+
+                    if (field.get(object) instanceof Instant) {
+                        builder.value(MYSQL_DATETIME_FORMATTER.format((Instant) field.get(object)));
+                    } else {
+                        builder.value(field.get(object).toString());
+                    }
                     field.setAccessible(false);
                 }
             }

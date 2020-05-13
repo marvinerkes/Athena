@@ -45,9 +45,11 @@ public class SelectQuery implements Query {
 
     private List<Join> joins = new ArrayList<>();
 
-    private LinkedHashMap<String, String> wheres = new LinkedHashMap<>();
+    private List<Condition> wheres = new ArrayList<>();
 
     private List<String> operators = new ArrayList<>();
+
+    private String groupBy = null;
 
     private String orderBy = null;
 
@@ -61,6 +63,7 @@ public class SelectQuery implements Query {
         this.wheres = builder.wheres;
         this.joins = builder.joins;
         this.operators = builder.operators;
+        this.groupBy = builder.groupBy;
         this.orderBy = builder.orderBy;
         this.limit = builder.limit;
     }
@@ -108,10 +111,14 @@ public class SelectQuery implements Query {
             sb.append(" WHERE ");
 
             int pos = 0;
-            for (String whereKey : wheres.keySet()) {
-                sb.append(whereKey).append(operators.get(pos)).append("?").append(((wheres.size() > 1 && pos < wheres.size() - 1) ? " AND " : ""));
+            for (Condition condition : wheres) {
+                sb.append(condition.column()).append(operators.get(pos)).append("?").append(((wheres.size() > 1 && pos < wheres.size() - 1) ? " AND " : ""));
                 pos++;
             }
+        }
+
+        if (groupBy != null) {
+            sb.append(" GROUP BY ").append(groupBy);
         }
 
         if(orderBy != null) {
@@ -121,7 +128,7 @@ public class SelectQuery implements Query {
         if(limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-
+        
         return sb.append(";").toString();
     }
 
@@ -131,9 +138,8 @@ public class SelectQuery implements Query {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connection.prepareStatement(sql());
-            List<String> wheresList = new ArrayList<>(wheres.values());
-            for (int i = 0; i < wheresList.size(); i++) {
-                preparedStatement.setObject(i + 1, wheresList.get(i));
+            for (int i = 0; i < wheres.size(); i++) {
+                preparedStatement.setObject(i + 1, wheres.get(i).value());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -155,9 +161,11 @@ public class SelectQuery implements Query {
 
         private List<Join> joins = new ArrayList<>();
 
-        private LinkedHashMap<String, String> wheres = new LinkedHashMap<>();
+        private List<Condition> wheres = new ArrayList<>();
 
         private List<String> operators = new ArrayList<>();
+
+        private String groupBy = null;
 
         private String orderBy = null;
 
@@ -236,7 +244,7 @@ public class SelectQuery implements Query {
          */
         public Builder where(Condition condition) {
 
-            this.wheres.put(condition.column(), condition.value());
+            this.wheres.add(condition);
             this.operators.add(condition.operator().sql());
 
             return this;
@@ -262,6 +270,19 @@ public class SelectQuery implements Query {
                     this.orderBy += order.column() + " " + order.type().toString();
                 }
             }
+
+            return this;
+        }
+
+        /**
+         * Set the grouped by key.
+         *
+         * @param groupBy the group.
+         * @return the builder.
+         */
+        public Builder groupBy(String groupBy) {
+
+            this.groupBy = groupBy;
 
             return this;
         }

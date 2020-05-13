@@ -23,6 +23,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.sql.Timestamp;
 
 /**
  * Created by Marvin Erkes on 10.10.2015.
@@ -100,6 +101,7 @@ public @interface Column {
         BYTE("TINYINT", Byte.class, byte.class),
         SHORT("SMALLINT", Short.class, short.class),
         CHAR("CHAR", char.class),
+        DATETIME("DATETIME", Timestamp.class),
         UNKNOWN("UNKNOWN");
 
         private String sqlName;
